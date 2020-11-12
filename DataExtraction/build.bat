@@ -1,0 +1,1 @@
+python download_set.py -c 230 -o ../DrawingsDataSet
