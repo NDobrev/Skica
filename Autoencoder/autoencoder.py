@@ -24,7 +24,7 @@ def rgb2gray(rgb):
 
 def read_data_set():
 	full_data_set = []
-	load_max = 25000
+	load_max = 50000
 	for im_path in glob.glob("../DrawingsDataSet/*.png"):
          if load_max == 0:
              break
@@ -69,11 +69,14 @@ class Autoencoder(Model):
     conv_layers = [
                    (8, (4, 4), 1, leaky_relu),
                    (16, (4, 4), 2, leaky_relu),
+                   (16, (4, 4), 1, leaky_relu),
                    (32, (3, 3), 2, leaky_relu),
+                   (32, (3, 3), 1, leaky_relu),
                    (64, (3, 3), 2, leaky_relu),
-                  # (64, (3, 3), 1, leaky_relu),
-                  # (64, (3, 3), 1, leaky_relu),
-								  # (64, (3, 3), 2, leaky_relu),
+                   (64, (3, 3), 1, leaky_relu),
+                   (64, (2, 2), 1, leaky_relu),
+								   (128, (2, 2), 2, leaky_relu),
+									 (64, (2, 2), 1, leaky_relu),
 									# (128, (3, 3), 1, leaky_relu),
                   # (128, (3, 3), 1, leaky_relu)
                   ]
@@ -83,6 +86,7 @@ class Autoencoder(Model):
 	
     for conv in conv_layers:
         self.add_layer(layers.Conv2D(conv[0], conv[1], strides=conv[2], activation=conv[3], padding='same', kernel_initializer=rn))
+        self.add_layer(layers.BatchNormalization())
 
     last_conv_shape = self.current_shape.shape[1:]
     print(last_conv_shape)
@@ -93,7 +97,7 @@ class Autoencoder(Model):
 
 #--------------LATANT-SPACE---------------#
 
-    #self.add_layer(layers.Dense(dense_layer / 4, activation='relu', kernel_initializer="ones",                           activity_regularizer=tf.keras.regularizers.l2(0.001)))
+    #self.add_layer(layers.Dense(64, activation='relu', kernel_initializer="ones",                           activity_regularizer=tf.keras.regularizers.l2(0.001)))
 
 #----------------DECODER------------------#
 
@@ -103,6 +107,7 @@ class Autoencoder(Model):
 
     for conv in conv_layers[::-1]:
       self.add_layer(layers.Conv2DTranspose(conv[0], kernel_size=conv[1], strides=conv[2], activation=conv[3], padding='same', kernel_initializer=rn))
+      self.add_layer(layers.BatchNormalization())
 
     self.add_layer(layers.Conv2D(1, kernel_size=(3,3), activation='sigmoid', padding='same'))
 
@@ -127,8 +132,9 @@ class Autoencoder(Model):
 def loss_f(actual, predicted):
     r = tf.math.subtract(actual, predicted)
     r = tf.math.abs(r)
-    r = tf.math.pow(r, 4)
+    r = tf.math.pow(r, 2)
     r = tf.math.reduce_mean(r)
+
     return r 
 
 class PredictionCallback(tf.keras.callbacks.Callback):
@@ -166,7 +172,7 @@ plt.show(block=False)
 
 
 autoencoder = Autoencoder(( 32, 32, 1)) 
-autoencoder.compile(Adam(lr=0.0001), loss=loss_f)
+autoencoder.compile(Adam(lr=0.001), loss=loss_f,metrics=['accuracy'])
 #autoencoder.compile(optimizer='adam', loss=loss_f)
 
 autoencoder.build((None, 32, 32, 1))
@@ -174,7 +180,7 @@ print(autoencoder.summary())
 vd=(test_set, test_set)
 autoencoder.fit(training_set, training_set,
                 epochs=35,
-				        batch_size=32,
+				        batch_size=64,
                 shuffle=True,
                 validation_data=vd,
 								callbacks=[PredictionCallback()])
