@@ -1,1 +1,1 @@
-python download_set.py -c 300 -o ../DrawingsDataSet
+python download_set.py -c 500 -o ../DrawingsDataSet

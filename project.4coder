@@ -1,0 +1,27 @@
+version(1);
+project_name = "4coder custom";
+
+patterns = {
+"*.py",
+"*.bat",
+"*.json",
+"*.4coder",
+"*.txt",
+};
+
+blacklist_patterns = {
+".*",
+};
+
+load_paths_custom = {
+ {"."},
+};
+
+load_paths = {
+ { load_paths_custom, .os = "win"  },
+ { load_paths_custom, .os = "linux"},
+ { load_paths_custom, .os = "mac"  },
+};
+
+command_list = {
+};
