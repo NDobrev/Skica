@@ -8,8 +8,7 @@ parser.add_argument("-v", "--verbose", help="increase output verbosity",
                     action="store_true", default="True")
 parser.add_argument("-o", "--output", help="where to write data set", 
 					 default= "./out")
-parser.add_argument("-c", "--count", help="how many images to generate from each type",
-					type=int, default="1")
+parser.add_argument("-c", "--count", help="how many images to generate from each type", type=int, default="1")
 
 args = parser.parse_args()
 
