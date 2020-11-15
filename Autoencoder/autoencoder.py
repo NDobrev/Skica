@@ -31,9 +31,6 @@ test_set =  data_set[split_point:]
 training_set = training_set[... ,tf.newaxis]
 test_set = test_set[... ,tf.newaxis]
 
-print(training_set.shape)
-print(test_set.shape)
-
 # Neural net
 
 
@@ -79,6 +76,7 @@ class Autoencoder(Model):
 
     #self.add_layer(layers.Dense(64, activation='relu', kernel_initializer="ones",                           activity_regularizer=tf.keras.regularizers.l2(0.001)))
 
+   # self.add_layer(layers.Dense(512, activation='relu', kernel_initializer="ones",                           activity_regularizer=tf.keras.regularizers.l1(0.001)))
 #----------------DECODER------------------#
 
     #self.add_layer(layers.Dense(dense_layer / 2, activation='relu'))
@@ -153,17 +151,15 @@ plt.show(block=False)
 
 autoencoder = Autoencoder(( 32, 32, 1)) 
 autoencoder.compile(Adam(lr=0.001), loss=loss_f,metrics=['accuracy'])
-#autoencoder.compile(optimizer='adam', loss=loss_f)
 
 autoencoder.build((None, 32, 32, 1))
 print(autoencoder.summary())
 vd=(test_set, test_set)
 autoencoder.fit(training_set, training_set,
                 epochs=35,
-				        batch_size=64,
+				        batch_size=32,
                 shuffle=True,
                 validation_data=vd,
 								callbacks=[PredictionCallback()])
 
-print("done")
 plt.show(block=True)
