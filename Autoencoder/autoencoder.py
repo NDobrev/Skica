@@ -14,29 +14,9 @@ from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
-def normalize_color(x):
-	return min(1, x/ 255)
-
-def rgb2gray(rgb):
-    return (np.dot(rgb[...,:3], [0.298, 0.586, 0.143])/ 255).clip(0, 1)
-
-
 
 def read_data_set():
-	full_data_set = []
-	load_max = 50000
-	for im_path in glob.glob("../DrawingsDataSet/*.png"):
-         if load_max == 0:
-             break
-
-         try:
-            im = imageio.imread(im_path)
-            grey = rgb2gray(im)
-            full_data_set.append(grey)
-            load_max = load_max -1
-         except:
-            print("Bad image: " + im_path)
-	result = np.array(full_data_set)
+	result = np.load('../DrawingsDataSet/image_set_d345_c100.npy')
 	print(result.shape)
 	return result
 
